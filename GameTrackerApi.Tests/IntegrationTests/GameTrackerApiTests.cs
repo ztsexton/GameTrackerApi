@@ -53,6 +53,19 @@ public class GameTrackerApiTests : IClassFixture<WebApplicationFactory<Program>>
         response.EnsureSuccessStatusCode();
         response.Content.Headers.ContentType.ToString().ShouldBe("text/plain; charset=utf-8");
     }
+    
+    [Theory]
+    [InlineData("/swagger")]
+    public async Task Get_SwaggerEndpointReturnsSuccessAndCorrectContentType(string url)
+    {
+        var client = _factory.CreateClient();
+
+        var response = await client.GetAsync(url);
+
+        if (response.Content.Headers.ContentType is null) throw new ArgumentException(nameof(response));
+        response.EnsureSuccessStatusCode();
+        response.Content.Headers.ContentType.ToString().ShouldBe("text/html; charset=utf-8");
+    }
 
     [Fact]
     public async Task Get_GameAlertsReturnsListOfGameAlerts()
