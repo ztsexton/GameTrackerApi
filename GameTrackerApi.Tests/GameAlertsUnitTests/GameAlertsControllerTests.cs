@@ -11,7 +11,7 @@ namespace GameTrackerApi.Tests.GameAlertsUnitTests;
 public class GameAlertsControllerTests
 {
     [Fact]
-    public void GetReturnsOkResult()
+    public void GetReturnsGameAlertArray()
     {
         var logger = A.Fake<ILogger<GameAlertsController>>();
         var sut = new GameAlertsController(logger);
