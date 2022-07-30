@@ -19,12 +19,13 @@ public class GameTrackerApiTests : IClassFixture<WebApplicationFactory<Program>>
     }
 
     [Fact]
-    public async Task CanCreateWebApplicationWithGameTrackerStartup()
+    public void CanCreateWebApplicationWithGameTrackerStartup()
     {
-        var application = new WebApplicationFactory<Program>()
-            .WithWebHostBuilder(builder => { });
+        var application = new WebApplicationFactory<Program>();
 
         var client = application.CreateClient();
+
+        client.ShouldNotBeNull();
     }
 
     [Theory]
@@ -40,6 +41,19 @@ public class GameTrackerApiTests : IClassFixture<WebApplicationFactory<Program>>
         response.Content.Headers.ContentType.ToString().ShouldBe("application/json; charset=utf-8");
     }
 
+    [Theory]
+    [InlineData("/health")]
+    public async Task Get_HealthCheckEndpointReturnsSuccessAndCorrectContentType(string url)
+    {
+        var client = _factory.CreateClient();
+
+        var response = await client.GetAsync(url);
+
+        if (response.Content.Headers.ContentType is null) throw new ArgumentException(nameof(response));
+        response.EnsureSuccessStatusCode();
+        response.Content.Headers.ContentType.ToString().ShouldBe("text/plain; charset=utf-8");
+    }
+
     [Fact]
     public async Task Get_GameAlertsReturnsListOfGameAlerts()
     {
@@ -53,5 +67,15 @@ public class GameTrackerApiTests : IClassFixture<WebApplicationFactory<Program>>
         var gameAlerts = JsonConvert.DeserializeObject<List<GameAlert>>(json);
 
         gameAlerts.ShouldBeOfType<List<GameAlert>>();
+    }
+
+    [Fact]
+    public async Task Get_HealthCheckReturnsValidHealthResult()
+    {
+        var client = _factory.CreateClient();
+
+        var response = await client.GetAsync("/health");
+        
+        response.EnsureSuccessStatusCode();
     }
 }
