@@ -29,4 +29,16 @@ public class GameAlertsController : ControllerBase
             })
             .ToArray();
     }
+
+    [HttpGet("{team}")]
+    public IActionResult GetTeamHomeGameAlert(string team)
+    {
+        if (team == "Washington Nationals")
+            return Ok(new GameAlert
+            {
+                HomeTeam = "Washington Nationals"
+            });
+
+        return NotFound();
+    }
 }

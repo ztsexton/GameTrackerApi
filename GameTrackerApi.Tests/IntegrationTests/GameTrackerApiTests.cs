@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Net;
 using Xunit;
 using System.Threading.Tasks;
 using GameTrackerApi.GameAlerts;
@@ -90,5 +91,25 @@ public class GameTrackerApiTests : IClassFixture<WebApplicationFactory<Program>>
         var response = await client.GetAsync("/health");
         
         response.EnsureSuccessStatusCode();
+    }
+
+    [Fact]
+    public async Task Get_HomeGameAlertWithTeamThatExistsReturns200()
+    {
+        var client = _factory.CreateClient();
+
+        var response = await client.GetAsync("/gamealerts/Washington%20Nationals");
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+    }
+    
+    [Fact]
+    public async Task Get_HomeGameAlertWithTeamThatDoesNotExistReturns404()
+    {
+        var client = _factory.CreateClient();
+
+        var response = await client.GetAsync("/gamealerts/nonexistantteam");
+        
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 }
