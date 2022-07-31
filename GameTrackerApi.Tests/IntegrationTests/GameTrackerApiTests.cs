@@ -52,7 +52,7 @@ public class GameTrackerApiTests : IClassFixture<WebApplicationFactory<Program>>
 
         if (response.Content.Headers.ContentType is null) throw new ArgumentException(nameof(response));
         response.EnsureSuccessStatusCode();
-        response.Content.Headers.ContentType.ToString().ShouldBe("text/plain; charset=utf-8");
+        response.Content.Headers.ContentType.ToString().ShouldBe("text/plain");
     }
     
     [Theory]
