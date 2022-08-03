@@ -12,10 +12,12 @@ public class GameAlertsController : ControllerBase
     };
 
     private readonly ILogger<GameAlertsController> _logger;
+    private readonly IGameAlertsProvider _gameAlertsProvider;
 
-    public GameAlertsController(ILogger<GameAlertsController> logger)
+    public GameAlertsController(ILogger<GameAlertsController> logger, IGameAlertsProvider gameAlertsProvider)
     {
         _logger = logger;
+        _gameAlertsProvider = gameAlertsProvider;
     }
 
     [HttpGet(Name = "GetGameAlerts")]
@@ -31,14 +33,17 @@ public class GameAlertsController : ControllerBase
     }
 
     [HttpGet("{team}")]
-    public IActionResult GetTeamHomeGameAlert(string team)
+    public async Task<IActionResult> GetTeamHomeGameAlert(string team)
     {
-        if (team == "Washington Nationals")
-            return Ok(new GameAlert
-            {
-                HomeTeam = "Washington Nationals"
-            });
+        var gameAlert = await _gameAlertsProvider.GetAlertAsync(team, DateTime.Now);
+        if (GameAlertHasHomeTeamData(gameAlert))
+            return Ok(gameAlert);
 
         return NotFound();
+    }
+
+    private bool GameAlertHasHomeTeamData(GameAlert gameAlert)
+    {
+        return !string.IsNullOrEmpty(gameAlert.HomeTeam);
     }
 }

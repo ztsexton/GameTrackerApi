@@ -108,7 +108,7 @@ public class GameTrackerApiTests : IClassFixture<WebApplicationFactory<Program>>
     {
         var client = _factory.CreateClient();
 
-        var response = await client.GetAsync("/gamealerts/nonexistantteam");
+        var response = await client.GetAsync("/gamealerts/non-existent-team");
         
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }

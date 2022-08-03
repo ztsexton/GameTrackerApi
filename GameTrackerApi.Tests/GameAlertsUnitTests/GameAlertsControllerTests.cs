@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using FakeItEasy;
 using GameTrackerApi.GameAlerts;
 using Microsoft.AspNetCore.Mvc;
@@ -21,43 +23,60 @@ public class GameAlertsControllerTests
     }
 
     [Fact]
-    public void GetTeamHomeGameAlertReturnsSingleAlert()
+    public async Task GetTeamHomeGameAlertReturnsSingleAlert()
     {
-        var sut = CreateGameAlertsController();
+        var gameAlertsProvider = CreateGameAlertProviderForWashingtonNationals();
+        var sut = CreateGameAlertsController(gameAlertsProvider);
 
-        var result = sut.GetTeamHomeGameAlert("Washington Nationals");
+        var result = await sut.GetTeamHomeGameAlert("Washington Nationals");
         
         result.ShouldBeOfType<OkObjectResult>();
     }
 
     [Fact]
-    public void GetTeamHomeGameAlertWithNonExistantTeamReturns404()
+    public async Task GetTeamHomeGameAlertWithNonExistentTeamReturns404()
     {
         var sut = CreateGameAlertsController();
 
-        var result = sut.GetTeamHomeGameAlert("The Non Existent Team");
+        var result = await sut.GetTeamHomeGameAlert("The Non Existent Team");
         
         result.ShouldBeOfType<NotFoundResult>();
     }
 
     [Fact]
-    public void GetHomeGameAlertReturnsAlertWithProperHomeTeam()
+    public async Task GetHomeGameAlertReturnsAlertWithProperHomeTeam()
     {
-        var sut = CreateGameAlertsController();
+        var gameAlertsProvider = CreateGameAlertProviderForWashingtonNationals();
+        var sut = CreateGameAlertsController(gameAlertsProvider);
 
-        var actionResult = sut.GetTeamHomeGameAlert("Washington Nationals");
+        var actionResult = await sut.GetTeamHomeGameAlert("Washington Nationals");
         var objectResult = actionResult as OkObjectResult;
-        var gameAlert = objectResult.Value as GameAlert;
-        
+        var gameAlert = objectResult?.Value as GameAlert;
+
+        if (gameAlert is null) throw new ArgumentException(nameof(gameAlert));
         gameAlert.HomeTeam.ShouldBe("Washington Nationals");
         
     }
 
+    private GameAlertsController CreateGameAlertsController(IGameAlertsProvider gameAlertsProvider)
+    {
+        var logger = A.Fake<ILogger<GameAlertsController>>();
+        return new GameAlertsController(logger, gameAlertsProvider);
+    }
+    
     private GameAlertsController CreateGameAlertsController()
     {
         var logger = A.Fake<ILogger<GameAlertsController>>();
-        var sut = new GameAlertsController(logger);
+        var gameAlertsProvider = A.Fake<IGameAlertsProvider>();
+        return new GameAlertsController(logger, gameAlertsProvider);
+    }
 
-        return sut;
+    private IGameAlertsProvider CreateGameAlertProviderForWashingtonNationals()
+    {
+        var gameAlertsProvider = A.Fake<IGameAlertsProvider>();
+        A.CallTo(() => gameAlertsProvider.GetAlertAsync("Washington Nationals", A<DateTime>._))
+            .Returns(new GameAlert { HomeTeam = "Washington Nationals" });
+
+        return gameAlertsProvider;
     }
 }
