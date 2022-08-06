@@ -1,4 +1,5 @@
 using GameTrackerApi.GameAlerts;
+using GameTrackerApi.GameAlerts.Mlb;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,7 +10,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHealthChecks();
+builder.Services.AddHttpClient();
 builder.Services.AddScoped<IGameAlertsProvider, GameAlertsProvider>();
+builder.Services.AddScoped<IMlbClient, MlbClient>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

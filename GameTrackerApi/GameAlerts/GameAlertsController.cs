@@ -33,9 +33,10 @@ public class GameAlertsController : ControllerBase
     }
 
     [HttpGet("{team}")]
-    public async Task<IActionResult> GetTeamHomeGameAlert(string team)
+    public async Task<IActionResult> GetTeamHomeGameAlert(string team, DateTime? date)
     {
-        var gameAlert = await _gameAlertsProvider.GetAlertAsync(team, DateTime.Now);
+        if (date is null) date = DateTime.Now;
+        var gameAlert = await _gameAlertsProvider.GetAlertAsync(team, date.Value);
         if (GameAlertHasHomeTeamData(gameAlert))
             return Ok(gameAlert);
 

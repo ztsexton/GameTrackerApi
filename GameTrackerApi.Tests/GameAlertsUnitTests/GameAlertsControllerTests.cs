@@ -28,7 +28,7 @@ public class GameAlertsControllerTests
         var gameAlertsProvider = CreateGameAlertProviderForWashingtonNationals();
         var sut = CreateGameAlertsController(gameAlertsProvider);
 
-        var result = await sut.GetTeamHomeGameAlert("Washington Nationals");
+        var result = await sut.GetTeamHomeGameAlert("Washington Nationals", DateTime.Now);
         
         result.ShouldBeOfType<OkObjectResult>();
     }
@@ -38,7 +38,7 @@ public class GameAlertsControllerTests
     {
         var sut = CreateGameAlertsController();
 
-        var result = await sut.GetTeamHomeGameAlert("The Non Existent Team");
+        var result = await sut.GetTeamHomeGameAlert("The Non Existent Team", DateTime.Now);
         
         result.ShouldBeOfType<NotFoundResult>();
     }
@@ -49,7 +49,7 @@ public class GameAlertsControllerTests
         var gameAlertsProvider = CreateGameAlertProviderForWashingtonNationals();
         var sut = CreateGameAlertsController(gameAlertsProvider);
 
-        var actionResult = await sut.GetTeamHomeGameAlert("Washington Nationals");
+        var actionResult = await sut.GetTeamHomeGameAlert("Washington Nationals", DateTime.Now);
         var objectResult = actionResult as OkObjectResult;
         var gameAlert = objectResult?.Value as GameAlert;
 

@@ -98,7 +98,7 @@ public class GameTrackerApiTests : IClassFixture<WebApplicationFactory<Program>>
     {
         var client = _factory.CreateClient();
 
-        var response = await client.GetAsync("/gamealerts/Washington%20Nationals");
+        var response = await client.GetAsync("/gamealerts/Washington%20Nationals?date=2022-08-03");
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
@@ -112,4 +112,5 @@ public class GameTrackerApiTests : IClassFixture<WebApplicationFactory<Program>>
         
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
+    
 }
