@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace GameTrackerApi.GameAlerts.Mlb;
 
@@ -18,7 +19,11 @@ public class MlbClient : IMlbClient
         var result = await client.GetAsync(url);
         var json = await result.Content.ReadAsStringAsync();
 
-        MlbResponse mlbResponse = JsonConvert.DeserializeObject<MlbResponse>(json);
+        var options = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        };
+        MlbResponse mlbResponse = JsonSerializer.Deserialize<MlbResponse>(json, options);
 
         return mlbResponse;
     }

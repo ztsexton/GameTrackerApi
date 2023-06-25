@@ -1,10 +1,16 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
+using System.Net.Http;
 using Xunit;
 using System.Threading.Tasks;
 using GameTrackerApi.GameAlerts;
+using GameTrackerApi.Tests.IntegrationTests.TestSetup;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Shouldly;
 
@@ -96,7 +102,7 @@ public class GameTrackerApiTests : IClassFixture<WebApplicationFactory<Program>>
     [Fact]
     public async Task Get_HomeGameAlertWithTeamThatExistsReturns200()
     {
-        var client = _factory.CreateClient();
+        var client = CreateClientWithMockAuthentication();
 
         var response = await client.GetAsync("/gamealerts/Washington%20Nationals?date=2022-08-03");
 
@@ -106,11 +112,29 @@ public class GameTrackerApiTests : IClassFixture<WebApplicationFactory<Program>>
     [Fact]
     public async Task Get_HomeGameAlertWithTeamThatDoesNotExistReturns404()
     {
-        var client = _factory.CreateClient();
+        var client = CreateClientWithMockAuthentication();
 
         var response = await client.GetAsync("/gamealerts/non-existent-team");
         
-        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
-    
+
+    private HttpClient CreateClientWithMockAuthentication()
+    {
+        var client = _factory.WithWebHostBuilder(builder =>
+            {
+                builder.ConfigureTestServices(services =>
+                {
+                    services.AddAuthentication(defaultScheme: "Test Scheme")
+                        .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("Test Scheme",
+                            options => { });
+                    
+                    var textingClient = services.Single(x => x.ServiceType == typeof(ITextingClient));
+
+                    services.AddScoped<ITextingClient, FakeTextingClient>();
+                });
+            })
+            .CreateClient();
+        return client;
+    }
 }

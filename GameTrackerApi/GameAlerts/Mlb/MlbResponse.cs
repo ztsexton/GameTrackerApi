@@ -1,116 +1,120 @@
-﻿namespace GameTrackerApi.GameAlerts.Mlb;
+﻿using Newtonsoft.Json;
+#pragma warning disable CS8618
+
+namespace GameTrackerApi.GameAlerts.Mlb;
 
    public class Status
     {
-        public string abstractGameState { get; set; }
-        public string codedGameState { get; set; }
-        public string detailedState { get; set; }
-        public string statusCode { get; set; }
-        public bool startTimeTBD { get; set; }
-        public string abstractGameCode { get; set; }
+        public string AbstractGameState { get; set; }
+        public string CodedGameState { get; set; }
+        public string DetailedState { get; set; }
+        public string StatusCode { get; set; }
+        public bool StartTimeTbd { get; set; }
+        public string AbstractGameCode { get; set; }
     }
 
     public class LeagueRecord
     {
-        public int wins { get; set; }
-        public int losses { get; set; }
-        public string pct { get; set; }
+        public int Wins { get; set; }
+        public int Losses { get; set; }
+        public string Pct { get; set; }
     }
 
     public class Team
     {
-        public int id { get; set; }
-        public string name { get; set; }
-        public string link { get; set; }
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Link { get; set; }
     }
 
     public class Away
     {
-        public LeagueRecord leagueRecord { get; set; }
-        public int score { get; set; }
-        public Team team { get; set; }
-        public bool isWinner { get; set; }
-        public bool splitSquad { get; set; }
-        public int seriesNumber { get; set; }
+        public LeagueRecord LeagueRecord { get; set; }
+        public int Score { get; set; }
+        public Team Team { get; set; }
+        public bool IsWinner { get; set; }
+        public bool SplitSquad { get; set; }
+        public int SeriesNumber { get; set; }
     }
 
     public class Home
     {
-        public LeagueRecord leagueRecord { get; set; }
-        public int score { get; set; }
-        public Team team { get; set; }
-        public bool isWinner { get; set; }
-        public bool splitSquad { get; set; }
-        public int seriesNumber { get; set; }
+        public LeagueRecord LeagueRecord { get; set; }
+        public int Score { get; set; }
+        public Team Team { get; set; }
+        public bool IsWinner { get; set; }
+        public bool SplitSquad { get; set; }
+        public int SeriesNumber { get; set; }
     }
 
     public class Teams
     {
-        public Away away { get; set; }
-        public Home home { get; set; }
+        public Away Away { get; set; }
+        public Home Home { get; set; }
     }
 
     public class Venue
     {
-        public int id { get; set; }
-        public string name { get; set; }
-        public string link { get; set; }
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Link { get; set; }
     }
 
     public class Content
     {
-        public string link { get; set; }
+        public string Link { get; set; }
     }
 
     public class Game
     {
-        public int gamePk { get; set; }
-        public string link { get; set; }
-        public string gameType { get; set; }
-        public string season { get; set; }
-        public DateTime gameDate { get; set; }
-        public string officialDate { get; set; }
-        public Status status { get; set; }
-        public Teams teams { get; set; }
-        public Venue venue { get; set; }
-        public Content content { get; set; }
-        public bool isTie { get; set; }
-        public int gameNumber { get; set; }
-        public bool publicFacing { get; set; }
-        public string doubleHeader { get; set; }
-        public string gamedayType { get; set; }
-        public string tiebreaker { get; set; }
-        public string calendarEventID { get; set; }
-        public string seasonDisplay { get; set; }
-        public string dayNight { get; set; }
-        public int scheduledInnings { get; set; }
-        public bool reverseHomeAwayStatus { get; set; }
-        public int inningBreakLength { get; set; }
-        public int gamesInSeries { get; set; }
-        public int seriesGameNumber { get; set; }
-        public string seriesDescription { get; set; }
-        public string recordSource { get; set; }
-        public string ifNecessary { get; set; }
-        public string ifNecessaryDescription { get; set; }
+        public int GamePk { get; set; }
+        public string Link { get; set; }
+        public string GameType { get; set; }
+        public string Season { get; set; }
+        public DateTime GameDate { get; set; }
+        public string OfficialDate { get; set; }
+        public Status Status { get; set; }
+        public Teams Teams { get; set; }
+        public Venue Venue { get; set; }
+        public Content Content { get; set; }
+        public bool IsTie { get; set; }
+        public int GameNumber { get; set; }
+        public bool PublicFacing { get; set; }
+        public string DoubleHeader { get; set; }
+        public string GamedayType { get; set; }
+        public string Tiebreaker { get; set; }
+        public string CalendarEventId { get; set; }
+        public string SeasonDisplay { get; set; }
+        public string DayNight { get; set; }
+        public int ScheduledInnings { get; set; }
+        public bool ReverseHomeAwayStatus { get; set; }
+        public int InningBreakLength { get; set; }
+        public int GamesInSeries { get; set; }
+        public int SeriesGameNumber { get; set; }
+        public string SeriesDescription { get; set; }
+        public string RecordSource { get; set; }
+        public string IfNecessary { get; set; }
+        public string IfNecessaryDescription { get; set; }
     }
 
     public class Date
     {
-        public DateTime date { get; set; }
-        public int totalItems { get; set; }
-        public int totalEvents { get; set; }
-        public int totalGames { get; set; }
-        public int totalGamesInProgress { get; set; }
-        public List<Game> games { get; set; }
-        public List<object> events { get; set; }
+        [JsonProperty("date")]
+        public DateTime TheDate { get; set; }
+        public int TotalItems { get; set; }
+        public int TotalEvents { get; set; }
+        public int TotalGames { get; set; }
+        public int TotalGamesInProgress { get; set; }
+        public List<Game> Games { get; set; }
+        public List<object> Events { get; set; }
     }
 
     public class MlbResponse
     {
-        public string copyright { get; set; }
-        public int totalItems { get; set; }
-        public int totalEvents { get; set; }
-        public int totalGames { get; set; }
-        public int totalGamesInProgress { get; set; }
-        public List<Date> dates { get; set; }
+        public string Copyright { get; set; }
+        public int TotalItems { get; set; }
+        public int TotalEvents { get; set; }
+        public int TotalGames { get; set; }
+        public int TotalGamesInProgress { get; set; }
+        public List<Date> Dates { get; set; }
     }

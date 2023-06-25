@@ -1,6 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using FakeItEasy;
+﻿using System.Threading.Tasks;
 using GameTrackerApi.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Shouldly;

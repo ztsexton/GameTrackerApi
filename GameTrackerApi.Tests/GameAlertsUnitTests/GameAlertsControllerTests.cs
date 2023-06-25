@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using FakeItEasy;
 using GameTrackerApi.GameAlerts;
@@ -18,7 +17,7 @@ public class GameAlertsControllerTests
         var sut = CreateGameAlertsController();
 
         var result = sut.Get();
-        
+
         result.ShouldBeOfType<GameAlert[]>();
     }
 
@@ -29,7 +28,7 @@ public class GameAlertsControllerTests
         var sut = CreateGameAlertsController(gameAlertsProvider);
 
         var result = await sut.GetTeamHomeGameAlert("Washington Nationals", DateTime.Now);
-        
+
         result.ShouldBeOfType<OkObjectResult>();
     }
 
@@ -39,8 +38,8 @@ public class GameAlertsControllerTests
         var sut = CreateGameAlertsController();
 
         var result = await sut.GetTeamHomeGameAlert("The Non Existent Team", DateTime.Now);
-        
-        result.ShouldBeOfType<NotFoundResult>();
+
+        result.ShouldBeOfType<OkObjectResult>();
     }
 
     [Fact]
@@ -51,11 +50,23 @@ public class GameAlertsControllerTests
 
         var actionResult = await sut.GetTeamHomeGameAlert("Washington Nationals", DateTime.Now);
         var objectResult = actionResult as OkObjectResult;
+        var message = objectResult?.Value as string;
+
+        if (message is null) throw new ArgumentException(nameof(message));
+        message.ShouldContain("Washington Nationals");
+    }
+
+    [Fact]
+    public async Task GetNationalsHomeGameAlertReturnsGoodResult()
+    {
+        var gameAlertsProvider = CreateGameAlertProviderForWashingtonNationals();
+        var sut = CreateGameAlertsController(gameAlertsProvider);
+
+        var actionResult = await sut.GetNationalsHomeGameAlert();
+        var objectResult = actionResult as OkObjectResult;
         var gameAlert = objectResult?.Value as GameAlert;
 
-        if (gameAlert is null) throw new ArgumentException(nameof(gameAlert));
-        gameAlert.HomeTeam.ShouldBe("Washington Nationals");
-        
+        gameAlert?.HomeTeam.ShouldBe("Washington Nationals");
     }
 
     private GameAlertsController CreateGameAlertsController(IGameAlertsProvider gameAlertsProvider)
@@ -63,7 +74,7 @@ public class GameAlertsControllerTests
         var logger = A.Fake<ILogger<GameAlertsController>>();
         return new GameAlertsController(logger, gameAlertsProvider);
     }
-    
+
     private GameAlertsController CreateGameAlertsController()
     {
         var logger = A.Fake<ILogger<GameAlertsController>>();
@@ -75,7 +86,7 @@ public class GameAlertsControllerTests
     {
         var gameAlertsProvider = A.Fake<IGameAlertsProvider>();
         A.CallTo(() => gameAlertsProvider.GetAlertAsync("Washington Nationals", A<DateTime>._))
-            .Returns(new GameAlert { HomeTeam = "Washington Nationals" });
+            .Returns(new GameAlert { HomeTeam = "Washington Nationals", Message = "The Washington Nationals have a home game at 7:05 PM"});
 
         return gameAlertsProvider;
     }

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GameTrackerApi.GameAlerts;
@@ -32,19 +33,28 @@ public class GameAlertsController : ControllerBase
             .ToArray();
     }
 
+    [Authorize]
     [HttpGet("{team}")]
-    public async Task<IActionResult> GetTeamHomeGameAlert(string team, DateTime? date)
+    public async Task<ActionResult> GetTeamHomeGameAlert(string team, DateTime? date)
     {
         if (date is null) date = DateTime.Now;
         var gameAlert = await _gameAlertsProvider.GetAlertAsync(team, date.Value);
         if (GameAlertHasHomeTeamData(gameAlert))
-            return Ok(gameAlert);
+            return Ok(gameAlert.Message);
 
-        return NotFound();
+        return Ok("No home game");
     }
+
 
     private bool GameAlertHasHomeTeamData(GameAlert gameAlert)
     {
         return !string.IsNullOrEmpty(gameAlert.HomeTeam);
+    }
+
+    [Authorize]
+    [HttpGet("nationals")]
+    public async Task<IActionResult> GetNationalsHomeGameAlert()
+    {
+        return await GetTeamHomeGameAlert("Washington Nationals", DateTime.Today);
     }
 }
